@@ -1,0 +1,88 @@
+﻿@using ObiletService.Core.Application.Features.Queries.Journeys.List
+
+@{
+    Layout = "~/Views/Shared/_layouth.cshtml";
+    ViewData["Title"] = "Journey";
+
+    DateTime departureDate = Model.Departure;
+
+    var months = new[] { "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık" };
+    var days = new[] { "Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi" };
+
+    int day = departureDate.Day;
+    string month = months[departureDate.Month - 1]; 
+    string weekday = days[(int)departureDate.DayOfWeek]; 
+
+    string departureDateFormatted = $"{day} {month} {weekday}";
+}
+@model GetJourneysQueryResponse
+<style>
+    body, html, main {
+        height: 100%;
+        margin: 0;
+    }
+    .w-mincontent{
+        width: min-content;
+    }
+
+    .font-size-list{
+        font-size: 16px;
+    }
+</style>
+<div class="container h-100">
+    <div class="p-5 h-100">
+        <ul class="list-group overflow-auto h-100">
+            <li class="m-0 p-0 mb-2" style="list-style: none;position: sticky; top: 0; z-index: 1">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary p-3 text-white d-flex justify-content-center">
+                    <div onclick="window.location.href = '/home/index'">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+                        </svg>
+                    </div>
+                    <div class="text-center w-100">
+                        <span class="d-block">@Model.OriginLocation - @Model.DestinationLocation</span>
+                        <span>@departureDateFormatted</span>
+                    </div>
+                    
+                </nav>
+            </li>
+            @foreach (var item in Model.Journeys)
+            {
+                <li class="list-group-item d-flex flex-column">
+                    <div class="d-flex ">
+                        <div class="w-mincontent">
+                            <label class="font-size-list">Kalkış</label>
+                            <div class="d-flex">
+                                <span class="font-size-list">@item.Departure</span>
+                                <span class="font-size-list mx-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8" />
+                                    </svg>
+                                </span>
+                            </div>
+                           
+                        </div>
+
+                        <div class="w-mincontent">
+                            <label class="font-size-list">Varış</label>
+                            <span class="font-size-list">@item.Arrival</span>
+                        </div>
+                        <div class="text-end w-100"><label class="bg-danger text-white p-2 rounded">@item.Price</label></div>
+                    </div>
+                    <div class="d-flex">
+                        <span>@item.Origin</span>
+                        <span class="mx-2">-</span>
+                        <span>@item.Destination</span>
+                    </div>                 
+                </li>
+
+            }
+        </ul>
+    </div>
+
+</div>
+
+<script>
+
+
+</script>

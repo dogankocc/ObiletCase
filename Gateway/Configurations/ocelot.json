@@ -15,7 +15,7 @@
       "UpstreamScheme": "https"
     },
     {
-      "DownstreamPathTemplate": "/home/index",
+      "DownstreamPathTemplate": "/home/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -24,8 +24,8 @@
         }
       ],
 
-      "UpstreamPathTemplate": "/home/index",
-      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/home/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST" ],
       "UpstreamScheme": "https"
     },
     {

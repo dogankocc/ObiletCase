@@ -7,11 +7,6 @@
 @model GetBusLocationQueryResponse
 
  <style>
-    .navbar-custom {
-        height: 50px; 
-     
-    }
-
     .dropdown li:first-child {
         position: sticky;
         top: 0;
@@ -26,9 +21,8 @@
 
     <div class="container-lg">
         <div class="container-fluid">
-            <nav class="navbar navbar-expand-lg navbar-dark bg-primary navbar-custom mb-5">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary navbar-custom mb-5"></nav>
 
-            </nav>
             <div class="list-group rounded-0 position-relative">
                 <div class="dropdown">
                     <div class="list-group-item list-group-item-action" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -38,7 +32,7 @@
                         </div>
                     </div>
 
-                    <ul class="dropdown-menu w-100 p-0" style="max-height:300px; overflow:auto;">
+                    <ul id="departure-bus-location-list" class="dropdown-menu w-100 p-0" style="max-height:300px; overflow:auto;">
                         <li class="dropdown-item">
                             <div class="input-group">
                                 <button class="btn btn-outline-primary" type="button" onclick="searchDepartureBusLocation(event)">
@@ -72,7 +66,7 @@
                         </div>
                     </div>
 
-                    <ul class="dropdown-menu w-100 p-0" style="max-height:300px; overflow:auto;">
+                    <ul id="destination-bus-location-list" class="dropdown-menu w-100 p-0" style="max-height:300px; overflow:auto;">
                         <li class="dropdown-item">
                             <div class="input-group">
                                 <button class="btn btn-outline-primary" type="button" onclick="searchDestinationBusLocation(event)">
@@ -82,8 +76,9 @@
                                         </svg>
                                     </span>
                                 </button>
-                                <input id="destination-bus-location" type="text" class="form-control" placeholder="Varış noktası arama" aria-label="Varış noktası arama" aria-describedby="basic-addon1">
+                                <input id="destination-bus-location" name="data" type="text" class="form-control" placeholder="Varış noktası arama" aria-label="Varış noktası arama" aria-describedby="basic-addon1">
                             </div>
+
                         </li>
                         @foreach (var location in Model.Data)
                         {
@@ -110,6 +105,10 @@
                 </div>
 
             </div>
+            <div class="d-grid gap-2 col-6 mx-auto mt-5">
+                <button type="button" class="btn btn-primary" onclick="getjourney(event)">Bileti Bul</button>
+
+            </div>
         </div>
   
     </div>
@@ -119,6 +118,7 @@
 <script src="~/js/flatpickr_tr.js"></script>
   <script>
       var datepicker;
+    let selectedDate = "";
 
     document.addEventListener("DOMContentLoaded", function () {
         let tomorrow = new Date();
@@ -127,6 +127,8 @@
         let day = String(tomorrow.getDate()).padStart(2, "0");
         let month = String(tomorrow.getMonth() + 1).padStart(2, "0");
         let year = tomorrow.getFullYear();
+
+        selectedDate = `${year}-${month}-${day}`;
 
         let formattedDate = `${day}-${month}-${year}`;
 
@@ -139,11 +141,13 @@
             onChange: function (selectedDates, dateStr, instance) {
                 console.log(dateStr)
                 document.getElementById("selected_date").innerText = dateStr;
+                selectedDate = instance.formatDate(selectedDates[0], "Y-m-d");
             }
         });
         document.getElementById("today-button").addEventListener("click", handleClickNowDate);
 
         document.getElementById("tomorrow-button").addEventListener("click", handleClickTomorrowDate);
+
     });
 
     function handleSelectFromLocation(event, locationId){
@@ -223,37 +227,94 @@
 
     function searchDepartureBusLocation(event){
         event.stopPropagation()
-        let text = document.getElementById("departure-bus-location").value;
-        console.log(text)
-    }
-    function searchDestinationBusLocation(event) {
-        event.stopPropagation()
-        let text = document.getElementById("destination-bus-location").value;
-        console.log(text)
+        var text = document.getElementById("departure-bus-location").value;
 
-        fetch('https://localhost:5000/posts', {
+        fetch('https://localhost:5000/home/SearchBusLocations', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title: 'foo',
-                body: 'bar',
-                userId: 1
+                data: text
             })
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Ağ hatası: ' + response.statusText);
-            }
-            return response.json();  
-        })
-        .then(data => {
-            console.log('Veri alındı:', data);  
-        })
-        .catch(error => {
-            console.error('Hata oluştu:', error);  
-        });
+            .then(response => response.json())
+            .then(response => {
+                let dropdownMenu = document.getElementById("departure-bus-location-list")
+                let firstItem = dropdownMenu.querySelector("li:first-child"); // İlk li'yi al
 
+                // Tüm mevcut öğeleri sil, ancak ilk öğeyi koru
+                while (dropdownMenu.children.length > 1) {
+                    dropdownMenu.removeChild(dropdownMenu.lastChild);
+                }
+
+                // Yeni öğeleri ekle
+                response.result.data.forEach(location => {
+                    let li = document.createElement("li");
+                    li.id = `from_location_${location.id}`;
+                    li.onclick = function (event) { handleSelectFromLocation(event, location.id); };
+
+                    let a = document.createElement("a");
+                    a.className = "dropdown-item";
+                    a.href = "#";
+                    a.textContent = location.name;
+
+                    li.appendChild(a);
+                    dropdownMenu.appendChild(li);
+                });
+            }).catch(error => console.error("Error:", error));
     }
+
+    function searchDestinationBusLocation(event){
+        event.stopPropagation()
+        var text = document.getElementById("destination-bus-location").value;
+
+        fetch('https://localhost:5000/home/SearchBusLocations', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                data: text
+            })
+        })
+       .then(response => response.json())
+       .then(response => {
+           let dropdownMenu = document.getElementById("destination-bus-location-list")
+           let firstItem = dropdownMenu.querySelector("li:first-child"); // İlk li'yi al
+
+           // Tüm mevcut öğeleri sil, ancak ilk öğeyi koru
+           while (dropdownMenu.children.length > 1) {
+               dropdownMenu.removeChild(dropdownMenu.lastChild);
+           }
+
+           // Yeni öğeleri ekle
+           response.result.data.forEach(location => {
+               let li = document.createElement("li");
+               li.id = `to_location_${location.id}`;
+               li.onclick = function (event) { handleSelectToLocation(event, location.id); };
+
+               let a = document.createElement("a");
+               a.className = "dropdown-item";
+               a.href = "#";
+               a.textContent = location.name;
+
+               li.appendChild(a);
+               dropdownMenu.appendChild(li);
+           });
+       }).catch(error => console.error("Error:", error));
+    }
+
+      function getjourney(event) {
+        let originId = document.getElementById("selected_from_location").getAttribute("data-selected-from-location-id");
+        let destinationId = document.getElementById("selected_to_location").getAttribute("data-selected-to-location-id");
+
+        const params = new URLSearchParams({
+            originId,
+            destinationId,
+            selectedDate
+        });
+          window.location.href = `/home/journey?${params.toString()}`;
+ 
+      }
   </script>

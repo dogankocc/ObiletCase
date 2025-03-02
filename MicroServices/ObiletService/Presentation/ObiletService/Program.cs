@@ -1,5 +1,6 @@
 using AutoMapper;
 using ObiletService.Core.Application.Features.Queries.BusLocation.List;
+using ObiletService.Core.Application.Features.Queries.BusLocation.Search;
 using ObiletService.Core.Application.Mapping;
 using ObiletService.Middleware;
 using ObiletService.Services;
@@ -9,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(GetBusLocationQueryHandler).Assembly));
-
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(SearchBusLocationQueryHandler).Assembly));
 
 var mapperConfig = new MapperConfiguration(mc =>
 {
@@ -26,15 +27,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("GatewayOnly",
-        policy =>
-        {
-            policy.WithOrigins("https://localhost:5000")
-                  .AllowAnyMethod()
-                  .AllowAnyHeader()
-                  .AllowCredentials();
-        });
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
+
 
 builder.Services.AddHttpClient();
 
@@ -57,7 +53,7 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-app.UseCors("GatewayOnly");
+app.UseCors("AllowAllOrigins");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

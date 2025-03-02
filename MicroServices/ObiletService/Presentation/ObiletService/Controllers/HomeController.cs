@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ObiletService.Core.Application.Features.Queries.BusLocation.List;
+using ObiletService.Core.Application.Features.Queries.BusLocation.Search;
 using ObiletService.Core.Application.Features.Queries.Journeys.List;
+using ObiletService.Core.Domain.Wrapper;
 using ObiletService.Filters;
 
 namespace ObiletService.Controllers
@@ -32,13 +34,48 @@ namespace ObiletService.Controllers
             if(response.IsSuccessful)
                 return View(response.Result);
 
-            return RedirectToAction("Error");
+            return View("Error");
         }
 
-        // GET: HomeController/Details/5
-        public ActionResult Details(int id)
+        [HttpPost("SearchBusLocations")]
+        public async Task<Response<GetBusLocationQueryResponse>> SearchBusLocations([FromBody]SearchBusLocationQueryRequest request)
         {
-            return View();
+            request.DeviceSesssion = new Core.Application.Dto.SessionDto()
+            {
+                DeviceId = HttpContext.Session.GetString("DeviceId"),
+                SessionId = HttpContext.Session.GetString("SessionId"),
+            };
+            request.Date = "2016-03-11T11:33:00";
+
+            var response = await _mediator.Send(request);
+
+            return response;
+        }
+
+        [HttpGet("journey")]
+        public async Task<IActionResult> Journey(long originId, long destinationId, string selectedDate)
+        {
+
+            var response = await _mediator.Send(new GetJourneysQueryRequest
+            {
+                DeviceSesssion = new Core.Application.Dto.SessionDto()
+                {
+                    DeviceId = HttpContext.Session.GetString("DeviceId"),
+                    SessionId = HttpContext.Session.GetString("SessionId"),
+                },
+                Date = "2016-03-11T11:33:00",
+                Data = new GetJourneysRequestData()
+                {
+                    OriginId = originId,
+                    DestinationId = destinationId,
+                    DepartureDate = selectedDate
+                }
+            });
+
+            if (response.IsSuccessful)
+                return View(response.Result);
+
+            return View("Error");
         }
     }
 }

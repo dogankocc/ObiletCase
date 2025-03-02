@@ -1,5 +1,8 @@
 ﻿
+using AutoMapper;
 using MediatR;
+using Newtonsoft.Json;
+using ObiletService.Core.Application.Dto;
 using ObiletService.Core.Domain.Wrapper;
 using System.Text;
 
@@ -7,34 +10,48 @@ namespace ObiletService.Core.Application.Features.Queries.Journeys.List
 {
     public class GetJourneysQueryHandler : IRequestHandler<GetJourneysQueryRequest, Response<GetJourneysQueryResponse>>
     {
+        private readonly IMapper _mapper;
+        public GetJourneysQueryHandler(IMapper mapper) { _mapper = mapper; }
+
         public async Task<Response<GetJourneysQueryResponse>> Handle(GetJourneysQueryRequest request, CancellationToken cancellationToken)
         {
             using (HttpClient client = new HttpClient())
             {
 
-                var requestData = new
+                string jsonContent = JsonConvert.SerializeObject(request, new JsonSerializerSettings
                 {
-                    data = (object)null,
-                    device_session = new
-                    {
-                        session_id = request.Session.SessionId,
-                        device_id = request.Session.DeviceId
-                    },
-                    date = DateTime.Now,
-                    language = "tr-TR"
-                };
+                    Formatting = Formatting.Indented,
+                    ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver() // Özel camelCase vs. olmasın
+                });
 
-                string jsonContent = System.Text.Json.JsonSerializer.Serialize(requestData);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                 client.DefaultRequestHeaders.Add("Authorization", "Basic JEcYcEMyantZV095WVc3G2JtVjNZbWx1");
 
-                HttpResponseMessage response = await client.PostAsync("https://v2-api.obilet.com/api/location/getbuslocations", content);
+                HttpResponseMessage httpResponse = await client.PostAsync("https://v2-api.obilet.com/api/journey/getbusjourneys", content);
 
-                string responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseBody);
+                string responseBody = await httpResponse.Content.ReadAsStringAsync();
 
-                return null;
+                var response = JsonConvert.DeserializeObject<JourneyResponse>(responseBody);
+
+                var result = response.Data.GroupBy(e => new
+                {
+                    e.OriginLocation,
+                    e.DestinationLocation,
+                    Departure = e.Journey.Departure.Date
+                }).Select(e => new GetJourneysQueryResponse
+                {
+                    OriginLocation = e.Key.OriginLocation,
+                    DestinationLocation = e.Key.DestinationLocation,
+                    Departure = e.Key.Departure,
+                    Journeys = _mapper.Map<List<JourneyDto>>(e.Select(s => s.Journey).ToList())
+                }).FirstOrDefault();
+
+                return new Response<GetJourneysQueryResponse>
+                {
+                    IsSuccessful = true,
+                    Result = result
+                };
             }
         }
     }
