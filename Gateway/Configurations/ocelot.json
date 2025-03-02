@@ -1,0 +1,79 @@
+﻿{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/obiletapi/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+
+      "UpstreamPathTemplate": "/obilet/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "UpstreamScheme": "https"
+    },
+    {
+      "DownstreamPathTemplate": "/home/index",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+
+      "UpstreamPathTemplate": "/home/index",
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamScheme": "https"
+    },
+    {
+      "DownstreamPathTemplate": "/user/session",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+
+      "UpstreamPathTemplate": "/",
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamScheme": "https"
+    },
+    {
+      "DownstreamPathTemplate": "/bootstrap/css/{everything}",
+      "UpstreamPathTemplate": "/bootstrap/css/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/bootstrap/js/{everything}",
+      "UpstreamPathTemplate": "/bootstrap/js/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "GET" ]
+    }
+  ],
+
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:5000",
+    "CorsOptions": {
+      "AllowedOrigins": [ "*" ],
+      "AllowedMethods": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "AllowedHeaders": [ "*" ]
+    }
+  }
+}

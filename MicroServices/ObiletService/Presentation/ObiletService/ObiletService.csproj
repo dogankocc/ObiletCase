@@ -1,0 +1,80 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.29.3" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.70.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <Protobuf Include="Protos/identity.proto" GrpcServices="Client" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\ObiletService.Core.Application\ObiletService.Core.Application.csproj" />
+    <ProjectReference Include="..\..\Core\ObiletService.Core.Domain\ObiletService.Core.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Models\" />
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\bootstrap\css\bootstrap-grid.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-grid.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-grid.min.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-grid.min.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-grid.rtl.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-grid.rtl.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-grid.rtl.min.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-reboot.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-reboot.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-reboot.min.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-reboot.min.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-reboot.rtl.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-reboot.rtl.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-reboot.rtl.min.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-reboot.rtl.min.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-utilities.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-utilities.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-utilities.min.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-utilities.min.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-utilities.rtl.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-utilities.rtl.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-utilities.rtl.min.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap-utilities.rtl.min.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap.min.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap.min.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap.rtl.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap.rtl.css.map" />
+    <None Include="wwwroot\bootstrap\css\bootstrap.rtl.min.css" />
+    <None Include="wwwroot\bootstrap\css\bootstrap.rtl.min.css.map" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.bundle.js" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.bundle.js.map" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.bundle.min.js" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.bundle.min.js.map" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.esm.js" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.esm.js.map" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.esm.min.js" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.esm.min.js.map" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.js" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.js.map" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.min.js" />
+    <None Include="wwwroot\bootstrap\js\bootstrap.min.js.map" />
+  </ItemGroup>
+
+</Project>

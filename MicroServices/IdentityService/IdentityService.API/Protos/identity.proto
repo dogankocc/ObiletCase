@@ -1,0 +1,51 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "IdentityService";
+
+package identity;
+
+// gRPC Servisi
+service Identity {
+  rpc GetSession (SessionRequest) returns (SessionResponse);
+}
+
+// Session isteği
+message SessionRequest {
+  int32 type = 1;
+  Connection connection = 2;
+  Application application = 3;
+  Browser browser = 4;
+}
+
+// Bağlantı bilgileri
+message Connection {
+  string ip_address = 1;
+  string port = 2;
+}
+
+// Uygulama bilgileri
+message Application {
+  string version = 1;
+  string equipment_id = 2;
+}
+
+message Browser {
+	string name  = 1;
+	string version = 2;
+}
+
+// Session yanıtı
+message SessionResponse {
+  string status = 1;
+  SessionData data = 2;
+  string message = 3;
+  string user_message = 4;
+  string api_request_id = 5;
+  string controller = 6;
+}
+
+// Session verileri
+message SessionData {
+  string session_id = 1;
+  string device_id = 2;
+}

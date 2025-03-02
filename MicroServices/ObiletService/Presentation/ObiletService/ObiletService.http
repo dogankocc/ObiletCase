@@ -1,0 +1,6 @@
+@ObiletService_HostAddress = http://localhost:5023
+
+GET {{ObiletService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
