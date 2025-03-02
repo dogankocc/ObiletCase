@@ -12,6 +12,13 @@
      
     }
 
+    .dropdown li:first-child {
+        position: sticky;
+        top: 0;
+        background-color: #f1f1f1;
+        z-index: 1; 
+        padding: 12px;
+    }
   </style>
 <link rel="stylesheet" href="~/css/flatpickr.min.css">
 
@@ -31,7 +38,19 @@
                         </div>
                     </div>
 
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu w-100 p-0" style="max-height:300px; overflow:auto;">
+                        <li class="dropdown-item">
+                            <div class="input-group">
+                                <button class="btn btn-outline-primary" type="button">
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                <input type="text" class="form-control" placeholder="Kalkış noktası arama" aria-label="Kalkış noktası arama" aria-describedby="basic-addon1">
+                            </div>
+                        </li>
                         @foreach (var location in Model.Data)
                         {
                             <li id="from_location_@location.Id" onclick="handleSelectFromLocation(event, @location.Id)"><a class="dropdown-item" href="#">@location.Name</a></li>
@@ -53,7 +72,19 @@
                         </div>
                     </div>
 
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu w-100 p-0" style="max-height:300px; overflow:auto;">
+                        <li class="dropdown-item">
+                            <div class="input-group">
+                                <button class="btn btn-outline-primary" type="button">
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                <input type="text" class="form-control" placeholder="Varış noktası arama" aria-label="Varış noktası arama" aria-describedby="basic-addon1">
+                            </div>
+                        </li>
                         @foreach (var location in Model.Data)
                         {
                             <li id="to_location_@location.Id" onclick="handleSelectToLocation(event, @location.Id)"><a class="dropdown-item" href="#">@location.Name</a></li>
@@ -61,14 +92,23 @@
                     </ul>
                 </div>
                 <div class="mt-2"></div>
-
-                <div class="list-group-item list-group-item-action" type="button" aria-expanded="false" onclick="handleClickDate(event)">
-                    <div class="w-100">
+                <div class="d-flex list-group-item list-group-item-action" aria-expanded="false" onclick="handleClickDate(event)">
+                    <div type="button" class="w-100 h-100">
                         <h5 class="mb-1">Tarih</h5>
                         <p id="selected_date" class="mb-1"></p>
                     </div>
                     <input type="text" id="date-input" name="tarih" style="opacity: 0; position: absolute;">
+                    <div class="float-end" onclick="event.stopPropagation()">
+                        <div class="btn-group-vertical" role="group" aria-label="Vertical radio toggle button group">
+                            <input type="radio" class="btn-check" name="vbtn-radio" id="today-button" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="today-button">Bugün</label>
+                            <input type="radio" class="btn-check" name="vbtn-radio" id="tomorrow-button" autocomplete="off" checked="">
+                            <label class="btn btn-outline-primary" for="tomorrow-button">Yarın</label>
+                        </div>
+                 
+                    </div>
                 </div>
+
             </div>
         </div>
   
@@ -78,6 +118,8 @@
 <script src="~/js/flatpickr.min.js"></script>
 <script src="~/js/flatpickr_tr.js"></script>
   <script>
+      var datepicker;
+
     document.addEventListener("DOMContentLoaded", function () {
         let tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -90,7 +132,7 @@
 
         document.getElementById("selected_date").innerText = formattedDate;
 
-        flatpickr("#date-input", {
+        datepicker = flatpickr("#date-input", {
             defaultDate: tomorrow,
             dateFormat: "d-m-Y",
             locale: "tr",
@@ -99,6 +141,9 @@
                 document.getElementById("selected_date").innerText = dateStr;
             }
         });
+        document.getElementById("today-button").addEventListener("click", handleClickNowDate);
+
+        document.getElementById("tomorrow-button").addEventListener("click", handleClickTomorrowDate);
     });
 
     function handleSelectFromLocation(event, locationId){
@@ -147,8 +192,32 @@
       function handleClickDate(event) {
         var dateInput = document.getElementById("date-input");
         dateInput.click()
-
-        console.log(dateInput.value)
-
       }
+
+
+    function handleClickNowDate(event) {
+        const today = new Date();
+        datepicker.setDate(today);
+        let day = String(today.getDate()).padStart(2, "0");
+        let month = String(today.getMonth() + 1).padStart(2, "0");
+        let year = today.getFullYear();
+
+        let formattedDate = `${day}-${month}-${year}`;
+
+        document.getElementById("selected_date").innerText = formattedDate;
+    }
+
+    function handleClickTomorrowDate(event) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        datepicker.setDate(tomorrow);
+
+        let day = String(tomorrow.getDate()).padStart(2, "0");
+        let month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+        let year = tomorrow.getFullYear();
+
+        let formattedDate = `${day}-${month}-${year}`;
+
+        document.getElementById("selected_date").innerText = formattedDate;
+    }
   </script>
