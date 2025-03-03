@@ -1,51 +1,16 @@
-﻿var datepicker;
-let selectedDate = "@ViewBag.DefaultSelectedDate";
-var _storage = null;
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    document.getElementById("today-button").addEventListener("click", handleClickNowDate);
-
-    document.getElementById("tomorrow-button").addEventListener("click", handleClickTomorrowDate);
-
-    setStorageValues();
-
-    var parts = selectedDate.split('-');
-
-    var year = parts[0];
-    var month = parts[1];
-    var day = parts[2];
-
-    var defaultSelectedDate = new Date(year, month - 1, day);
-
-    let formattedDate = `${day}-${month}-${year}`;
-
-    document.getElementById("selected_date").innerText = formattedDate;
-
-    datepicker = flatpickr("#date-input", {
-        defaultDate: defaultSelectedDate,
-        dateFormat: "d-m-Y",
-        locale: "tr",
-        onChange: function (selectedDates, dateStr, instance) {
-            console.log(dateStr)
-            document.getElementById("selected_date").innerText = dateStr;
-            selectedDate = instance.formatDate(selectedDates[0], "Y-m-d");
-            updateStorage('selectedDate', selectedDate)
-        }
-    });
-});
+﻿
+var datepicker;
 
 function updateStorage(key, value) {
     _storage = localStorage.getItem("obilet_index_storage");
     if (!_storage) {
-        _storage = JSON.stringify({ [key]: value })
+        _storage = { [key]: value }
     }
     else {
-        _storage = decodeHtmlEntities(_storage);
         _storage = JSON.parse(_storage);
         _storage[key] = value;
     }
-    localStorage.setItem('obilet_index_storage', JSON.stringify(_storage))
+    window.localStorage.setItem('obilet_index_storage', JSON.stringify(_storage))
 }
 
 function handleSelectFromLocation(event, locationId) {
@@ -53,7 +18,7 @@ function handleSelectFromLocation(event, locationId) {
     var selectedToLocationId = document.getElementById("selected_to_location").getAttribute("data-selected-to-location-id");
 
     if (selectedToLocationId == locationId) {
-        showToast("Kalkış ve varış yeri aynı olamaz", "danger"); 
+        showToast("Kalkış ve varış yeri aynı olamaz", "danger");
         return;
     }
 
@@ -298,7 +263,7 @@ function setDateButtons() {
     let day = String(date.getDate()).padStart(2, "0");
     let month = String(date.getMonth() + 1).padStart(2, "0");
     let year = date.getFullYear();
- 
+
     if (selectedDate == `${year}-${month}-${day}`) {
         document.getElementById('tomorrow-button').setAttribute("checked", "")
 
@@ -311,7 +276,7 @@ function setDateButtons() {
     day = String(date.getDate()).padStart(2, "0");
     month = String(date.getMonth() + 1).padStart(2, "0");
     year = date.getFullYear();
-  
+
     if (selectedDate == `${year}-${month}-${day}`) {
         document.getElementById('today-button').removeAttribute("checked", "")
         document.getElementById('tomorrow-button').setAttribute("checked", "")
@@ -322,3 +287,34 @@ function setDateButtons() {
     document.getElementById('tomorrow-button').removeAttribute("checked", "")
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.getElementById("today-button").addEventListener("click", handleClickNowDate);
+
+    document.getElementById("tomorrow-button").addEventListener("click", handleClickTomorrowDate);
+
+    setStorageValues();
+
+    var parts = selectedDate.split('-');
+
+    var year = parts[0];
+    var month = parts[1];
+    var day = parts[2];
+
+    var defaultSelectedDate = new Date(year, month - 1, day);
+
+    let formattedDate = `${day}-${month}-${year}`;
+
+    document.getElementById("selected_date").innerText = formattedDate;
+
+    datepicker = flatpickr("#date-input", {
+        defaultDate: defaultSelectedDate,
+        dateFormat: "d-m-Y",
+        locale: "tr",
+        onChange: function (selectedDates, dateStr, instance) {
+            document.getElementById("selected_date").innerText = dateStr;
+            selectedDate = instance.formatDate(selectedDates[0], "Y-m-d");
+            updateStorage('selectedDate', selectedDate)
+        }
+    });
+});
