@@ -17,28 +17,40 @@ namespace ObiletService.Core.Application.Features.Queries.BusLocation.Search
         }
         public async Task<Response<GetBusLocationQueryResponse>> Handle(SearchBusLocationQueryRequest request, CancellationToken cancellationToken)
         {
-            using (HttpClient client = new HttpClient())
-            {          
-                string jsonContent = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+            try
+            {
+                using (HttpClient client = new HttpClient())
                 {
-                    Formatting = Formatting.Indented,
-                    ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver() // Özel camelCase vs. olmasın
-                });
+                    string jsonContent = JsonConvert.SerializeObject(request, new JsonSerializerSettings
+                    {
+                        Formatting = Formatting.Indented,
+                        ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver() // Özel camelCase vs. olmasın
+                    });
 
-                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                client.DefaultRequestHeaders.Add("Authorization", "Basic JEcYcEMyantZV095WVc3G2JtVjNZbWx1");
+                    client.DefaultRequestHeaders.Add("Authorization", "Basic JEcYcEMyantZV095WVc3G2JtVjNZbWx1");
 
-                HttpResponseMessage httpResponse = await client.PostAsync("https://v2-api.obilet.com/api/location/getbuslocations", content);
+                    HttpResponseMessage httpResponse = await client.PostAsync("https://v2-api.obilet.com/api/location/getbuslocations", content);
 
-                string responseBody = await httpResponse.Content.ReadAsStringAsync();
+                    string responseBody = await httpResponse.Content.ReadAsStringAsync();
 
-                var response = JsonConvert.DeserializeObject<GetBusLocationQueryResponse>(responseBody);
+                    var response = JsonConvert.DeserializeObject<GetBusLocationQueryResponse>(responseBody);
 
+                    return new Response<GetBusLocationQueryResponse>
+                    {
+                        IsSuccessful = true,
+                        Result = response
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
                 return new Response<GetBusLocationQueryResponse>
                 {
-                    IsSuccessful = true,
-                    Result = response
+                    IsSuccessful = false,
+                    HasExceptionError = true,
+                    Message = ex.Message
                 };
             }
         }

@@ -122,33 +122,33 @@ function searchDepartureBusLocation(event) {
             data: text
         })
     })
-        .then(response => response.json())
-        .then(response => {
-            let dropdownMenu = document.getElementById("departure-bus-location-list")
+    .then(response => response.json())
+    .then(response => {
+        let dropdownMenu = document.getElementById("departure-bus-location-list")
 
-            // Tüm mevcut öğeleri sil, ancak ilk öğeyi koru
-            while (dropdownMenu.children.length > 1) {
-                dropdownMenu.removeChild(dropdownMenu.lastChild);
-            }
+        // Tüm mevcut öğeleri sil, ancak ilk öğeyi koru
+        while (dropdownMenu.children.length > 1) {
+            dropdownMenu.removeChild(dropdownMenu.lastChild);
+        }
 
-            // Yeni öğeleri ekle
-            response.result.data.forEach(location => {
-                let li = document.createElement("li");
-                li.id = `from_location_${location.id}`;
-                li.onclick = function (event) { handleSelectFromLocation(event, location.id); };
+        // Yeni öğeleri ekle
+        response.result.data.forEach(location => {
+            let li = document.createElement("li");
+            li.id = `from_location_${location.id}`;
+            li.onclick = function (event) { handleSelectFromLocation(event, location.id); };
 
-                let a = document.createElement("a");
-                a.className = "dropdown-item";
-                a.href = "#";
-                a.textContent = location.name;
+            let a = document.createElement("a");
+            a.className = "dropdown-item";
+            a.href = "#";
+            a.textContent = location.name;
 
-                li.appendChild(a);
-                dropdownMenu.appendChild(li);
-            });
+            li.appendChild(a);
+            dropdownMenu.appendChild(li);
+        });
 
-            updateStorage('fromLocation', text)
+        updateStorage('fromLocation', text)
 
-        }).catch(error => console.error("Error:", error));
+    }).catch(error => console.error("Error:", error));
 }
 
 function searchDestinationBusLocation(event) {
@@ -164,33 +164,33 @@ function searchDestinationBusLocation(event) {
             data: text
         })
     })
-        .then(response => response.json())
-        .then(response => {
-            let dropdownMenu = document.getElementById("destination-bus-location-list")
+    .then(response => response.json())
+    .then(response => {
+        let dropdownMenu = document.getElementById("destination-bus-location-list")
 
-            // Tüm mevcut öğeleri sil, ancak ilk öğeyi koru
-            while (dropdownMenu.children.length > 1) {
-                dropdownMenu.removeChild(dropdownMenu.lastChild);
-            }
+        // Tüm mevcut öğeleri sil, ancak ilk öğeyi koru
+        while (dropdownMenu.children.length > 1) {
+            dropdownMenu.removeChild(dropdownMenu.lastChild);
+        }
 
-            // Yeni öğeleri ekle
-            response.result.data.forEach(location => {
-                let li = document.createElement("li");
-                li.id = `to_location_${location.id}`;
-                li.onclick = function (event) { handleSelectToLocation(event, location.id); };
+        // Yeni öğeleri ekle
+        response.result.data.forEach(location => {
+            let li = document.createElement("li");
+            li.id = `to_location_${location.id}`;
+            li.onclick = function (event) { handleSelectToLocation(event, location.id); };
 
-                let a = document.createElement("a");
-                a.className = "dropdown-item";
-                a.href = "#";
-                a.textContent = location.name;
+            let a = document.createElement("a");
+            a.className = "dropdown-item";
+            a.href = "#";
+            a.textContent = location.name;
 
-                li.appendChild(a);
-                dropdownMenu.appendChild(li);
-            });
+            li.appendChild(a);
+            dropdownMenu.appendChild(li);
+        });
 
-            updateStorage('toLocation', text)
+        updateStorage('toLocation', text)
 
-        }).catch(error => console.error("Error:", error));
+    }).catch(error => console.error("Error:", error));
 }
 
 function getjourney(event) {
@@ -226,19 +226,24 @@ function setStorageValues() {
         _storage = decodeHtmlEntities(_storage);
         _storage = JSON.parse(_storage);
 
-        var selectedFromLocationElement = document.getElementById("selected_from_location");
+        if (_storage.departureLocationId && _storage.departureLocation) {
+            var selectedFromLocationElement = document.getElementById("selected_from_location");
 
-        selectedFromLocationElement.innerText = _storage.departureLocation;
-        selectedFromLocationElement.setAttribute("data-selected-from-location-id", _storage.departureLocationId);
+            selectedFromLocationElement.innerText = _storage.departureLocation;
+            selectedFromLocationElement.setAttribute("data-selected-from-location-id", _storage.departureLocationId);
+        }
+        if (_storage.destinationLocationId && _storage.destinationLocation) {
+            var selectedToLocationElement = document.getElementById("selected_to_location");
 
-        var selectedToLocationElement = document.getElementById("selected_to_location");
+            selectedToLocationElement.innerText = _storage.destinationLocation;
+            selectedToLocationElement.setAttribute("data-selected-to-location-id", _storage.destinationLocationId);
+        }
 
-        selectedToLocationElement.innerText = _storage.destinationLocation;
-        selectedToLocationElement.setAttribute("data-selected-to-location-id", _storage.destinationLocationId);
+        if (_storage.selectedDate) {
+            selectedDate = _storage.selectedDate;
 
-        selectedDate = _storage.selectedDate;
-
-        setDateButtons()
+            setDateButtons()
+        }
 
         if (_storage.fromLocation) {
             document.getElementById("departure-bus-location").value = _storage.fromLocation;
@@ -311,6 +316,7 @@ document.addEventListener("DOMContentLoaded", function () {
         defaultDate: defaultSelectedDate,
         dateFormat: "d-m-Y",
         locale: "tr",
+        minDate: "today",
         onChange: function (selectedDates, dateStr, instance) {
             document.getElementById("selected_date").innerText = dateStr;
             selectedDate = instance.formatDate(selectedDates[0], "Y-m-d");

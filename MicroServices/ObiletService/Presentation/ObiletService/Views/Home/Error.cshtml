@@ -1,0 +1,12 @@
+﻿@using ObiletService.Core.Application.Dto
+@{
+    Layout = "~/Views/Shared/_layouth.cshtml";
+    ViewData["Title"] = "Journey";
+}
+@model ErrorDto
+
+<div class ="d-flex align-items-center justify-content-center vh-100">
+    <div class="container">
+        <div class="text-danger text-center">@Model.Message</div>
+    </div>
+</div>

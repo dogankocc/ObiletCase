@@ -1,12 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using ObiletService.Core.Application.Dto;
 using ObiletService.Core.Application.Features.Queries.BusLocation.List;
 using ObiletService.Core.Application.Features.Queries.BusLocation.Search;
 using ObiletService.Core.Application.Features.Queries.Journeys.List;
 using ObiletService.Core.Domain.Wrapper;
 using ObiletService.Filters;
-using System.Net;
 
 namespace ObiletService.Controllers
 {
@@ -25,70 +24,109 @@ namespace ObiletService.Controllers
         [HttpGet("index")]
         public async Task<IActionResult> Index(GetBusLocationQueryRequest request)
         {
-            request.DeviceSesssion = new Core.Application.Dto.SessionDto()
+            try
             {
-                DeviceId = HttpContext.Session.GetString("DeviceId"),
-                SessionId = HttpContext.Session.GetString("SessionId"),
-            };
-            request.Date = "2016-03-11T11:33:00";
+                request.DeviceSesssion = new Core.Application.Dto.SessionDto()
+                {
+                    DeviceId = HttpContext.Session.GetString("DeviceId"),
+                    SessionId = HttpContext.Session.GetString("SessionId"),
+                };
+                request.Date = "2016-03-11T11:33:00";
 
-            var response = await _mediator.Send(request);
+                var response = await _mediator.Send(request);
 
-            if (response.IsSuccessful)
-            {
-                ViewBag.DefaultDepartureLocationId = response.Result.Data[0].Id;
-                ViewBag.DefaultDepartureLocation = response.Result.Data[0].Name;
-                ViewBag.DefaultDestinationLocationId = response.Result.Data[1].Id;
-                ViewBag.DefaultDestinationLocation = response.Result.Data[1].Name;
-                ViewBag.DefaultSelectedDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+                if (response.IsSuccessful)
+                {
+                    ViewBag.DefaultDepartureLocationId = response.Result.Data[0].Id;
+                    ViewBag.DefaultDepartureLocation = response.Result.Data[0].Name;
+                    ViewBag.DefaultDestinationLocationId = response.Result.Data[1].Id;
+                    ViewBag.DefaultDestinationLocation = response.Result.Data[1].Name;
+                    ViewBag.DefaultSelectedDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
 
-                return View(response.Result);
+                    return View(response.Result);
+                }
+
+                return View("Error", new ErrorDto { Message = $"Bir şeyler ters gitti ! daha sonra tekrar deneyiniz.\n Hata Mesajı: {response.Message}" });
             }
-
-            return View("Error");
+            catch (Exception ex)
+            {
+                return View("Error", new ErrorDto { Message = ex.Message });
+            }
         }
 
         [HttpPost("SearchBusLocations")]
         public async Task<Response<GetBusLocationQueryResponse>> SearchBusLocations([FromBody]SearchBusLocationQueryRequest request)
         {
-            request.DeviceSesssion = new Core.Application.Dto.SessionDto()
+            try
             {
-                DeviceId = HttpContext.Session.GetString("DeviceId"),
-                SessionId = HttpContext.Session.GetString("SessionId"),
-            };
-            request.Date = "2016-03-11T11:33:00";
+                request.DeviceSesssion = new Core.Application.Dto.SessionDto()
+                {
+                    DeviceId = HttpContext.Session.GetString("DeviceId"),
+                    SessionId = HttpContext.Session.GetString("SessionId"),
+                };
+                request.Date = "2016-03-11T11:33:00";
 
-            var response = await _mediator.Send(request);
+                var response = await _mediator.Send(request);
 
-            return response;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return new Response<GetBusLocationQueryResponse>
+                {
+                    Message = ex.Message,
+                    HasExceptionError = true,
+                    IsSuccessful = false
+                };
+            }
         }
 
         [HttpGet("journey")]
         public async Task<IActionResult> Journey(long originId, long destinationId, string selectedDate)
         {
-            var request = new GetJourneysQueryRequest
+            try
             {
-                DeviceSesssion = new Core.Application.Dto.SessionDto()
+                if (DateTime.Parse(selectedDate).Date < DateTime.Now.Date || originId == destinationId)
                 {
-                    DeviceId = HttpContext.Session.GetString("DeviceId"),
-                    SessionId = HttpContext.Session.GetString("SessionId"),
-                },
-                Date = "2016-03-11T11:33:00",
-                Data = new GetJourneysRequestData()
-                {
-                    OriginId = originId,
-                    DestinationId = destinationId,
-                    DepartureDate = selectedDate
+                    return View("Error", new ErrorDto { Message = "Arama kriterleri hatalı!" });
                 }
-            };
-            var response = await _mediator.Send(request);
-            if(!response.IsSuccessful)
-                return View("Error");
-            if (response.Result != null && response.Result.Journeys.Count > 0)
-            {
-                return View(response.Result);
+                var request = new GetJourneysQueryRequest
+                {
+                    DeviceSesssion = new Core.Application.Dto.SessionDto()
+                    {
+                        DeviceId = HttpContext.Session.GetString("DeviceId"),
+                        SessionId = HttpContext.Session.GetString("SessionId"),
+                    },
+                    Date = "2016-03-11T11:33:00",
+                    Data = new GetJourneysRequestData()
+                    {
+                        OriginId = originId,
+                        DestinationId = destinationId,
+                        DepartureDate = selectedDate
+                    }
+                };
+                var response = await _mediator.Send(request);
+
+                if (!response.IsSuccessful)
+                    return View("Error", new ErrorDto { Message = $"Bir şeyler ters gitti ! daha sonra tekrar deneyiniz. \n Hata Mesajı: {response.Message}" });
+
+                if (response.Result != null && response.Result.Journeys.Count > 0)
+                {
+                    return View(response.Result);
+                }
+
+                return View("JourneyNotFound");
             }
-            return View("JourneyNotFound");
+            catch (Exception ex)
+            {
+                return View("Error", new ErrorDto { Message = ex.Message });
+            }
+        }
+
+        [HttpGet("error")]
+        public async Task<IActionResult> Error()
+        {
+            return View();
         }
     }
 }
