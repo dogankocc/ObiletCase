@@ -38,13 +38,17 @@ namespace ObiletService.Core.Application.Features.Queries.Journeys.List
                 {
                     e.OriginLocation,
                     e.DestinationLocation,
+                    e.OriginLocationId,
+                    e.DestinationLocationId,
                     Departure = e.Journey.Departure.Date
                 }).Select(e => new GetJourneysQueryResponse
                 {
-                    OriginLocation = e.Key.OriginLocation,
+                    OriginLocationId = e.Key.OriginLocationId,
                     DestinationLocation = e.Key.DestinationLocation,
+                    OriginLocation = e.Key.OriginLocation,
+                    DestinationLocationId = e.Key.DestinationLocationId,
                     Departure = e.Key.Departure,
-                    Journeys = _mapper.Map<List<JourneyDto>>(e.Select(s => s.Journey).ToList())
+                    Journeys = _mapper.Map<List<JourneyDto>>(e.Select(s => s.Journey).ToList()).OrderBy(e=>e.Departure).ToList()
                 }).FirstOrDefault();
 
                 return new Response<GetJourneysQueryResponse>

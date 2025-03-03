@@ -25,17 +25,17 @@
 
             <div class="list-group rounded-0 position-relative">
                 <div class="dropdown">
-                    <div class="list-group-item list-group-item-action" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div id="from-location-dropdown-btn" class="list-group-item list-group-item-action" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="w-100">
                             <h5 class="mb-1">Nereden</h5>
-                            <p id="selected_from_location" class="mb-1" data-selected-from-location-id="@Model.Data[0].Id">@Model.Data[0].Name</p>
+                            <p id="selected_from_location" class="mb-1" data-selected-from-location-id="@ViewBag.DefaultDepartureLocationId">@ViewBag.DefaultDepartureLocation</p>
                         </div>
                     </div>
 
                     <ul id="departure-bus-location-list" class="dropdown-menu w-100 p-0" style="max-height:300px; overflow:auto;">
                         <li class="dropdown-item">
                             <div class="input-group">
-                                <button class="btn btn-outline-primary" type="button" onclick="searchDepartureBusLocation(event)">
+                                <button id="departure-bus-location-btn" class="btn btn-outline-primary" type="button" onclick="searchDepartureBusLocation(event)">
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
@@ -59,17 +59,17 @@
                 </button>
          
                 <div class="dropdown">
-                    <div class="list-group-item list-group-item-action" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div id="to-location-dropdown-btn" class="list-group-item list-group-item-action" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="w-100">
                             <h5 class="mb-1">Nereye</h5>
-                            <p id="selected_to_location" class="mb-1" data-selected-to-location-id="@Model.Data[1].Id">@Model.Data[1].Name</p>
+                            <p id="selected_to_location" class="mb-1" data-selected-to-location-id="@ViewBag.DefaultDestinationLocationId">@ViewBag.DefaultDestinationLocation</p>
                         </div>
                     </div>
 
                     <ul id="destination-bus-location-list" class="dropdown-menu w-100 p-0" style="max-height:300px; overflow:auto;">
                         <li class="dropdown-item">
                             <div class="input-group">
-                                <button class="btn btn-outline-primary" type="button" onclick="searchDestinationBusLocation(event)">
+                                <button id="destination-bus-location-btn" class="btn btn-outline-primary" type="button" onclick="searchDestinationBusLocation(event)">
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
@@ -116,205 +116,4 @@
 
 <script src="~/js/flatpickr.min.js"></script>
 <script src="~/js/flatpickr_tr.js"></script>
-  <script>
-      var datepicker;
-    let selectedDate = "";
-
-    document.addEventListener("DOMContentLoaded", function () {
-        let tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        let day = String(tomorrow.getDate()).padStart(2, "0");
-        let month = String(tomorrow.getMonth() + 1).padStart(2, "0");
-        let year = tomorrow.getFullYear();
-
-        selectedDate = `${year}-${month}-${day}`;
-
-        let formattedDate = `${day}-${month}-${year}`;
-
-        document.getElementById("selected_date").innerText = formattedDate;
-
-        datepicker = flatpickr("#date-input", {
-            defaultDate: tomorrow,
-            dateFormat: "d-m-Y",
-            locale: "tr",
-            onChange: function (selectedDates, dateStr, instance) {
-                console.log(dateStr)
-                document.getElementById("selected_date").innerText = dateStr;
-                selectedDate = instance.formatDate(selectedDates[0], "Y-m-d");
-            }
-        });
-        document.getElementById("today-button").addEventListener("click", handleClickNowDate);
-
-        document.getElementById("tomorrow-button").addEventListener("click", handleClickTomorrowDate);
-
-    });
-
-    function handleSelectFromLocation(event, locationId){
-
-        var selectedToLocationId = document.getElementById("selected_to_location").getAttribute("data-selected-to-location-id");
-
-        if (selectedToLocationId == locationId)
-            return;
-
-        var selectedFromLocationElement = document.getElementById("selected_from_location");
-
-        selectedFromLocationElement.innerText = event.target.innerText;
-        selectedFromLocationElement.setAttribute("data-selected-from-location-id", locationId);
-    }
-
-    function handleSelectToLocation(event, locationId) {
-
-        var selectedFromLocationId = document.getElementById("selected_from_location").getAttribute("data-selected-from-location-id");
-
-        if (selectedFromLocationId == locationId)
-            return;
-
-        var selectedToLocationElement = document.getElementById("selected_to_location");
-
-        selectedToLocationElement.innerText = event.target.innerText;
-        selectedToLocationElement.setAttribute("data-selected-to-location-id", locationId);
-    }
-
-      function handleShiftLocations(event) {
-        var selectedFromLocationElement = document.getElementById("selected_from_location");
-        var selectedFromLocationId = selectedFromLocationElement.getAttribute("data-selected-from-location-id");
-        var fromLocationName = selectedFromLocationElement.innerText;
-
-        var selectedToLocationElement = document.getElementById("selected_to_location");
-        var selectedToLocationId = selectedToLocationElement.getAttribute("data-selected-to-location-id");
-        var toLocationName = selectedToLocationElement.innerText;
-
-        selectedToLocationElement.innerText = fromLocationName;
-        selectedToLocationElement.setAttribute("data-selected-to-location-id", selectedFromLocationId);
-
-        selectedFromLocationElement.innerText = toLocationName;
-        selectedFromLocationElement.setAttribute("data-selected-from-location-id", selectedToLocationId);
-
-      }
-
-      function handleClickDate(event) {
-        var dateInput = document.getElementById("date-input");
-        dateInput.click()
-      }
-
-
-    function handleClickNowDate(event) {
-        const today = new Date();
-        datepicker.setDate(today);
-        let day = String(today.getDate()).padStart(2, "0");
-        let month = String(today.getMonth() + 1).padStart(2, "0");
-        let year = today.getFullYear();
-
-        let formattedDate = `${day}-${month}-${year}`;
-
-        document.getElementById("selected_date").innerText = formattedDate;
-    }
-
-    function handleClickTomorrowDate(event) {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        datepicker.setDate(tomorrow);
-
-        let day = String(tomorrow.getDate()).padStart(2, "0");
-        let month = String(tomorrow.getMonth() + 1).padStart(2, "0");
-        let year = tomorrow.getFullYear();
-
-        let formattedDate = `${day}-${month}-${year}`;
-
-        document.getElementById("selected_date").innerText = formattedDate;
-    }
-
-    function searchDepartureBusLocation(event){
-        event.stopPropagation()
-        var text = document.getElementById("departure-bus-location").value;
-
-        fetch('https://localhost:5000/home/SearchBusLocations', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                data: text
-            })
-        })
-            .then(response => response.json())
-            .then(response => {
-                let dropdownMenu = document.getElementById("departure-bus-location-list")
-                let firstItem = dropdownMenu.querySelector("li:first-child"); // İlk li'yi al
-
-                // Tüm mevcut öğeleri sil, ancak ilk öğeyi koru
-                while (dropdownMenu.children.length > 1) {
-                    dropdownMenu.removeChild(dropdownMenu.lastChild);
-                }
-
-                // Yeni öğeleri ekle
-                response.result.data.forEach(location => {
-                    let li = document.createElement("li");
-                    li.id = `from_location_${location.id}`;
-                    li.onclick = function (event) { handleSelectFromLocation(event, location.id); };
-
-                    let a = document.createElement("a");
-                    a.className = "dropdown-item";
-                    a.href = "#";
-                    a.textContent = location.name;
-
-                    li.appendChild(a);
-                    dropdownMenu.appendChild(li);
-                });
-            }).catch(error => console.error("Error:", error));
-    }
-
-    function searchDestinationBusLocation(event){
-        event.stopPropagation()
-        var text = document.getElementById("destination-bus-location").value;
-
-        fetch('https://localhost:5000/home/SearchBusLocations', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                data: text
-            })
-        })
-       .then(response => response.json())
-       .then(response => {
-           let dropdownMenu = document.getElementById("destination-bus-location-list")
-           let firstItem = dropdownMenu.querySelector("li:first-child"); // İlk li'yi al
-
-           // Tüm mevcut öğeleri sil, ancak ilk öğeyi koru
-           while (dropdownMenu.children.length > 1) {
-               dropdownMenu.removeChild(dropdownMenu.lastChild);
-           }
-
-           // Yeni öğeleri ekle
-           response.result.data.forEach(location => {
-               let li = document.createElement("li");
-               li.id = `to_location_${location.id}`;
-               li.onclick = function (event) { handleSelectToLocation(event, location.id); };
-
-               let a = document.createElement("a");
-               a.className = "dropdown-item";
-               a.href = "#";
-               a.textContent = location.name;
-
-               li.appendChild(a);
-               dropdownMenu.appendChild(li);
-           });
-       }).catch(error => console.error("Error:", error));
-    }
-
-      function getjourney(event) {
-        let originId = document.getElementById("selected_from_location").getAttribute("data-selected-from-location-id");
-        let destinationId = document.getElementById("selected_to_location").getAttribute("data-selected-to-location-id");
-
-        const params = new URLSearchParams({
-            originId,
-            destinationId,
-            selectedDate
-        });
-          window.location.href = `/home/journey?${params.toString()}`;
- 
-      }
-  </script>
+<script src="~/js/index.js"></script>

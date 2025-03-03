@@ -11,7 +11,8 @@ namespace ObiletService.Core.Application.Dto
         public string OriginLocation { get; set; }
 
         public string DestinationLocation { get; set; }
-
+        public long OriginLocationId { get; set; }
+        public long DestinationLocationId { get; set; }
         public DateTime Departure { get; set; }
 
         public List<JourneyDto> Journeys { get; set; }

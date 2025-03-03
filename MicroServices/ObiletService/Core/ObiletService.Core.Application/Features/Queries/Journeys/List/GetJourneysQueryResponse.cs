@@ -29,8 +29,14 @@ namespace ObiletService.Core.Application.Features.Queries.Journeys.List
         [JsonProperty("origin-location")]
         public string OriginLocation { get; set; }
 
+        [JsonProperty("origin-location-id")]
+        public long OriginLocationId { get; set; }
+
         [JsonProperty("destination-location")]
         public string DestinationLocation { get; set; }
+
+        [JsonProperty("destination-location-id")]
+        public long DestinationLocationId { get; set; }
 
         [JsonProperty("journey")]
         public Journey Journey { get; set; }
